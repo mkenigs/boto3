@@ -286,6 +286,44 @@ class S3Transfer(object):
                 "Failed to upload %s to %s: %s" % (
                     filename, '/'.join([bucket, key]), e))
 
+    def upload_folder(self, path, bucket, key,
+                      callback=None, extra_args=None):
+        """Upload a folder to an S3 object.
+
+        Variants have also been injected into S3 client, Bucket and Object.
+        You don't have to use S3Transfer.upload_file() directly.
+
+        .. seealso::
+            :py:meth:`S3.Client.upload_folder`
+        """
+        if not isinstance(path, six.string_types):
+            raise ValueError('Path must be a string')
+
+        subscribers = self._get_subscribers(callback)
+        future = self._manager.upload(
+            filename, bucket, key, extra_args, subscribers)
+
+
+for dir_path, _, filenames in os.walk('.'):
+                    for filename in filenames:
+                        file_path = os.path.join(html_dir, dir_path, filename)
+                        # remove ./
+                        subdir = dir_path[2:]
+                        future = executor.submit(self.upload_file, filename, source_path=file_path, subdir=subdir)
+
+
+
+        try:
+            future.result()
+        # If a client error was raised, add the backwards compatibility layer
+        # that raises a S3UploadFailedError. These specific errors were only
+        # ever thrown for upload_parts but now can be thrown for any related
+        # client error.
+        except ClientError as e:
+            raise S3UploadFailedError(
+                "Failed to upload %s to %s: %s" % (
+                    filename, '/'.join([bucket, key]), e))
+
     def download_file(self, bucket, key, filename, extra_args=None,
                       callback=None):
         """Download an S3 object to a file.
